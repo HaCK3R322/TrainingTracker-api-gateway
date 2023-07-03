@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: authentication-service-register
+          uri: lb://authentication-service
+          predicates:
+            - Path=/register
+        - id: authentication-service-authenticate
+          uri: lb://authentication-service
+          predicates:
+            - Path=/authenticate
+        - id: test-service
+          uri: lb://test-service
+          predicates:
+            - Path=/test/**
+          filters:
+            - JwtFilterFactory
