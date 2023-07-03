@@ -34,15 +34,21 @@ public class JwtFilter implements GatewayFilter {
         HttpHeaders headers = request.getHeaders();
         String token = headers.getFirst("Authorization");
 
+        Logger logger = Logger.getLogger(JwtFilter.class.getName());
+
         if (token != null && token.startsWith("Bearer ")) {
             String jwt = token.substring(7);
 
             // Perform JWT validation logic here
             if (isJwtValid(jwt)) {
-                // If JWT is valid, proceed with the request
+
+                logger.log(Level.INFO, "Validated jwt request: VALID");
+
                 return chain.filter(exchange);
             }
         }
+
+        logger.log(Level.INFO, "Validated jwt request: INVALID");
 
         // If JWT is missing or invalid, return forbidden status
         response.setStatusCode(HttpStatus.FORBIDDEN);

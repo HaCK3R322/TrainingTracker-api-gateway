@@ -11,7 +11,7 @@ spring:
           predicates:
             - Path=/authenticate
         - id: tracking-service
-          uri: lb://test-service
+          uri: lb://tracking-service
           predicates:
             - Path=/tracking/**
           filters:
