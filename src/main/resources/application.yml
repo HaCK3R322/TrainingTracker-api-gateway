@@ -10,9 +10,9 @@ spring:
           uri: lb://authentication-service
           predicates:
             - Path=/authenticate
-        - id: test-service
+        - id: tracking-service
           uri: lb://test-service
           predicates:
-            - Path=/test/**
+            - Path=/tracking/**
           filters:
             - JwtFilterFactory
