@@ -1,17 +1,13 @@
 package com.androsov.apigateway.adapters;
 
-import com.androsov.apigateway.dto.JwtValidationRequest;
+import com.androsov.apigateway.dto.JwtRequest;
+import com.androsov.apigateway.dto.UsernameAuthorities;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Service
 public class AuthenticationServiceAdapter {
@@ -26,7 +22,7 @@ public class AuthenticationServiceAdapter {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<JwtValidationRequest> requestEntity = new HttpEntity<>(new JwtValidationRequest(jwt), headers);
+        HttpEntity<JwtRequest> requestEntity = new HttpEntity<>(new JwtRequest(jwt), headers);
 
         ResponseEntity<String> responseEntity = restTemplate.exchange(url,
                 HttpMethod.POST,
@@ -40,6 +36,29 @@ public class AuthenticationServiceAdapter {
         }
 
         return response.equals("ok");
+    }
+
+    public UsernameAuthorities parse(String jwt) {
+        InstanceInfo instanceInfo = eurekaClient.getNextServerFromEureka("AUTHENTICATION-SERVICE", false);
+        String url = instanceInfo.getHomePageUrl() + "parse";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<JwtRequest> requestEntity = new HttpEntity<>(new JwtRequest(jwt), headers);
+
+        ResponseEntity<UsernameAuthorities> responseEntity = restTemplate.exchange(url,
+                HttpMethod.POST,
+                requestEntity,
+                UsernameAuthorities.class);
+
+        UsernameAuthorities response = responseEntity.getBody();
+
+        if (response == null) {
+            throw new RuntimeException("Null response from authentication-service when trying to validate jwt");
+        }
+
+        return response;
     }
 
 
