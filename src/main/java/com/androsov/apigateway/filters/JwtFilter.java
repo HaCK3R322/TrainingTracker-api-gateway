@@ -56,7 +56,6 @@ public class JwtFilter implements GatewayFilter {
 
                 UsernameAuthorities user = authenticationServiceAdapter.parse(jwt);
 
-                // why cant i change headers? idk... i can only add them
                 ServerHttpRequest modifiedRequest = request.mutate()
                         .header("Username", user.getUsername())
                         .header("Authorities", user.getAuthorities())
