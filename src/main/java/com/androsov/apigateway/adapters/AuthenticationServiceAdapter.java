@@ -11,9 +11,9 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class AuthenticationServiceAdapter {
+    private final RestTemplate restTemplate = new RestTemplate();
     @Autowired
     private EurekaClient eurekaClient;
-    private final RestTemplate restTemplate = new RestTemplate();
 
     public boolean validate(String jwt) {
         InstanceInfo instanceInfo = eurekaClient.getNextServerFromEureka("AUTHENTICATION-SERVICE", false);
